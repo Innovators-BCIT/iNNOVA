@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Confirm your slot - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Confirm your slot</h2>
+
+  <p>Booking for <strong id="customerName">guest</strong></p>
+
+  <div class="slot">
+    <h3 id="businessName">No slot picked yet</h3>
+    <p id="slotTime"><a href="landingpagecustomer.html">Go pick one</a></p>
+  </div>
+
+  <p id="errorMsg"><strong></strong></p>
+  <button id="confirmBtn" disabled>Confirm booking</button>
+
+  <hr>
+  <p><a href="landingpagecustomer.html">Back to open slots</a></p>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var business = params.get("business");
+    var time = params.get("time");
+
+    var name = localStorage.getItem("innovaName");
+    var email = localStorage.getItem("innovaEmail");
+
+    if (business && time && !email) {
+      window.location.href = "login_registerpagecustomer.html?business=" + encodeURIComponent(business) + "&time=" + encodeURIComponent(time);
+    }
+
+    if (name) {
+      document.getElementById("customerName").textContent = name;
+    }
+
+    if (business && time) {
+      document.getElementById("businessName").textContent = business;
+      document.getElementById("slotTime").textContent = time;
+      document.getElementById("confirmBtn").disabled = false;
+    }
+
+    document.getElementById("confirmBtn").onclick = function () {
+      var bookings = JSON.parse(localStorage.getItem("innovaBookings") || "[]");
+
+      for (var i = 0; i < bookings.length; i++) {
+        if (bookings[i].business === business && bookings[i].time === time) {
+          document.getElementById("errorMsg").querySelector("strong").textContent = "That slot was just taken. Please pick another.";
+          return;
+        }
+      }
+
+      bookings.push({
+        id: Date.now(),
+        email: email,
+        business: business,
+        time: time
+      });
+
+      localStorage.setItem("innovaBookings", JSON.stringify(bookings));
+
+      window.location.href = "thankyoubooking.html?business=" + encodeURIComponent(business) + "&time=" + encodeURIComponent(time);
+    };
+  </script>
+</body>
+</html>

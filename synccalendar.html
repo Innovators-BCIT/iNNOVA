@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sync your calendar - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Sync your calendar</h2>
+  <p>Connect the tools you already use so customers only see times you're free.</p>
+
+  <p><strong id="countMsg">0 connected</strong></p>
+
+  <p>
+    <label>Search tools</label><br>
+    <input type="text" id="searchBox" placeholder="Try Google, Outlook, Calendly...">
+  </p>
+
+  <p>
+    <label>Type</label><br>
+    <select id="typeFilter"></select>
+  </p>
+
+  <table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>Details</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="providerList"></tbody>
+  </table>
+
+  <p id="noResults" hidden>No tools match that.</p>
+
+  <h3>Import with a calendar link</h3>
+  <p>Paste an ICS or iCal link from any calendar app.</p>
+  <p><input type="text" id="icsLink" placeholder="https://example.com/calendar.ics"></p>
+  <p><button type="button" id="icsBtn">Import link</button></p>
+  <p id="icsMsg"><strong></strong></p>
+
+  <hr>
+
+  <p><a href="businessdashboard.html">Continue to my dashboard</a></p>
+  <p><a href="businessapproved.html">Back</a></p>
+
+  <hr>
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var providers = [
+      { name: "Google Calendar", type: "Calendars", note: "Gmail and Google Workspace" },
+      { name: "Apple Calendar", type: "Calendars", note: "iCloud" },
+      { name: "Outlook Calendar", type: "Calendars", note: "Outlook.com and Hotmail" },
+      { name: "Microsoft 365", type: "Calendars", note: "Work and school accounts" },
+      { name: "Exchange", type: "Calendars", note: "Server-based work calendars" },
+      { name: "Yahoo Calendar", type: "Calendars", note: "Yahoo Mail" },
+      { name: "Zoho Calendar", type: "Calendars", note: "Zoho Workplace" },
+      { name: "Proton Calendar", type: "Calendars", note: "Proton Mail" },
+      { name: "Fastmail Calendar", type: "Calendars", note: "CalDAV" },
+      { name: "Notion Calendar", type: "Calendars", note: "Notion workspace" },
+      { name: "Calendly", type: "Booking tools", note: "Bring over your existing bookings" },
+      { name: "Acuity Scheduling", type: "Booking tools", note: "Squarespace" },
+      { name: "Cal.com", type: "Booking tools", note: "Open source scheduling" },
+      { name: "Setmore", type: "Booking tools", note: "Appointments and staff" },
+      { name: "Square Appointments", type: "Booking tools", note: "Square" },
+      { name: "SimplyBook.me", type: "Booking tools", note: "Online booking" },
+      { name: "Fresha", type: "Salon, spa and wellness", note: "Salons and barbershops" },
+      { name: "Vagaro", type: "Salon, spa and wellness", note: "Salons, spas and fitness" },
+      { name: "Booksy", type: "Salon, spa and wellness", note: "Barbers and beauty" },
+      { name: "Mindbody", type: "Salon, spa and wellness", note: "Wellness and fitness studios" },
+      { name: "Jane App", type: "Health and clinics", note: "Clinics and practitioners" },
+      { name: "Cliniko", type: "Health and clinics", note: "Practice management" },
+      { name: "SimplePractice", type: "Health and clinics", note: "Therapy and health practices" },
+      { name: "Zoom", type: "Video meetings", note: "Add meeting links to bookings" },
+      { name: "Google Meet", type: "Video meetings", note: "Add meeting links to bookings" },
+      { name: "Microsoft Teams", type: "Video meetings", note: "Add meeting links to bookings" }
+    ];
+
+    var connected = JSON.parse(localStorage.getItem("innovaConnected") || "[]");
+    var listBox = document.getElementById("providerList");
+    var typeFilter = document.getElementById("typeFilter");
+
+    var typeHtml = '<option value="all">All types</option>';
+    var seen = "";
+
+    for (var t = 0; t < providers.length; t++) {
+      if (seen.indexOf("|" + providers[t].type + "|") === -1) {
+        typeHtml += '<option value="' + providers[t].type + '">' + providers[t].type + "</option>";
+        seen += "|" + providers[t].type + "|";
+      }
+    }
+
+    typeHtml += '<option value="connected">Connected only</option>';
+    typeFilter.innerHTML = typeHtml;
+
+    function drawList() {
+      var search = document.getElementById("searchBox").value.toLowerCase();
+      var typeChoice = typeFilter.value;
+      var html = "";
+      var lastType = "";
+      var shown = 0;
+
+      for (var i = 0; i < providers.length; i++) {
+        var p = providers[i];
+        var isOn = connected.indexOf(p.name) !== -1;
+
+        if (typeChoice === "connected" && !isOn) {
+          continue;
+        }
+
+        if (typeChoice !== "all" && typeChoice !== "connected" && p.type !== typeChoice) {
+          continue;
+        }
+
+        if (search && (p.name + " " + p.type + " " + p.note).toLowerCase().indexOf(search) === -1) {
+          continue;
+        }
+
+        shown++;
+
+        if (p.type !== lastType) {
+          html += '<tr><th colspan="3" align="left">' + p.type + "</th></tr>";
+          lastType = p.type;
+        }
+
+        html += "<tr>";
+        html += "<td><strong>" + p.name + "</strong></td>";
+        html += "<td>" + p.note + "</td>";
+
+        if (isOn) {
+          html += "<td>Connected<br>";
+          html += '<button type="button" onclick="disconnectTool(\'' + p.name + '\')">Disconnect</button></td>';
+        } else {
+          html += '<td><button type="button" onclick="connectTool(\'' + p.name + '\', this)">Connect</button></td>';
+        }
+
+        html += "</tr>";
+      }
+
+      listBox.innerHTML = html;
+      document.getElementById("noResults").hidden = shown > 0;
+      document.getElementById("countMsg").textContent = connected.length + " connected";
+    }
+
+    function connectTool(name, btn) {
+      btn.textContent = "Connecting...";
+      btn.disabled = true;
+
+      setTimeout(function () {
+        connected.push(name);
+        localStorage.setItem("innovaConnected", JSON.stringify(connected));
+        drawList();
+      }, 1000);
+    }
+
+    function disconnectTool(name) {
+      var index = connected.indexOf(name);
+
+      if (index !== -1) {
+        connected.splice(index, 1);
+      }
+
+      localStorage.setItem("innovaConnected", JSON.stringify(connected));
+      drawList();
+    }
+
+    document.getElementById("searchBox").oninput = drawList;
+    typeFilter.onchange = drawList;
+
+    document.getElementById("icsBtn").onclick = function () {
+      var link = document.getElementById("icsLink").value;
+      var msg = document.getElementById("icsMsg").querySelector("strong");
+
+      if (link.indexOf("http") === 0) {
+        msg.textContent = "Link imported.";
+      } else {
+        msg.textContent = "Please paste a full link starting with http.";
+      }
+    };
+
+    drawList();
+  </script>
+</body>
+</html>

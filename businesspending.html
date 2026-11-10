@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Application status - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Application received</h2>
+
+  <p>Thanks, <strong id="bizName">your business</strong>. We are checking your details.</p>
+
+  <div class="slot">
+    <h3>Status</h3>
+    <p><strong id="statusText"></strong></p>
+    <p id="statusMore"></p>
+  </div>
+
+  <p id="invoiceLink" hidden><a href="businessinvoice.html">View my invoice</a></p>
+  <p><a href="contactus.html">Questions? Contact us</a></p>
+
+  <hr>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="pricing.html">Pricing</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var bizName = localStorage.getItem("innovaBizName");
+
+    if (bizName) {
+      document.getElementById("bizName").textContent = bizName;
+    }
+
+    function check() {
+      var status = localStorage.getItem("innovaBizStatus");
+      var text = document.getElementById("statusText");
+      var more = document.getElementById("statusMore");
+      var link = document.getElementById("invoiceLink");
+
+      link.hidden = true;
+
+      if (status === "invoiced") {
+        text.textContent = "Approved";
+        more.textContent = "Your business was approved. Your invoice is ready.";
+        link.hidden = false;
+      } else if (status === "paid") {
+        window.location.href = "businessapproved.html";
+      } else if (status === "rejected") {
+        text.textContent = "Not approved";
+        more.textContent = "We could not approve this application. Please contact us for details.";
+      } else if (status === "pending") {
+        text.textContent = "Waiting for approval";
+        more.textContent = "This page updates by itself, no need to refresh.";
+      } else {
+        text.textContent = "No application found";
+        more.textContent = "Register your business to get started.";
+      }
+    }
+
+    setInterval(check, 2000);
+    check();
+  </script>
+</body>
+</html>

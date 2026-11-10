@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin review - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Admin review</h2>
+
+  <div class="slot" id="applicant"></div>
+
+  <hr>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    function esc(t) {
+      return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function drawApplicant() {
+      var bizName = localStorage.getItem("innovaBizName");
+      var email = localStorage.getItem("innovaBizEmail");
+      var status = localStorage.getItem("innovaBizStatus");
+      var box = document.getElementById("applicant");
+
+      if (!bizName || !status) {
+        box.innerHTML = "<p>No applications yet.</p>";
+        return;
+      }
+
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "");
+      var nameOk = bizName.trim().length >= 2;
+      var formatOk = emailOk && nameOk;
+
+      var labels = {
+        pending: "Waiting for review",
+        invoiced: "Approved, invoice sent",
+        paid: "Paid and onboarded",
+        rejected: "Rejected"
+      };
+
+      var html = "<h3>" + esc(bizName) + "</h3>";
+      html += "<p>Email: " + esc(email) + "</p>";
+      html += "<p>Format check: <strong>" + (formatOk ? "Passed" : "Failed") + "</strong></p>";
+      html += "<p>Status: <strong>" + (labels[status] || esc(status)) + "</strong></p>";
+
+      if (status === "pending") {
+        html += '<button type="button" onclick="setStatus(\'invoiced\')"' + (formatOk ? "" : " disabled") + ">Approve and send invoice</button> ";
+        html += '<button type="button" onclick="setStatus(\'rejected\')">Reject</button>';
+      } else {
+        html += '<button type="button" onclick="setStatus(\'pending\')">Reset to waiting (demo)</button>';
+      }
+
+      box.innerHTML = html;
+    }
+
+    function setStatus(newStatus) {
+      localStorage.setItem("innovaBizStatus", newStatus);
+      drawApplicant();
+    }
+
+    window.addEventListener("storage", drawApplicant);
+
+    drawApplicant();
+  </script>
+</body>
+</html>

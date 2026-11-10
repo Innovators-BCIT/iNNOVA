@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Business register - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Register your business</h2>
+
+  <form id="registerForm">
+    <p>
+      <label>Business name</label><br>
+      <input type="text" id="bizName" required>
+    </p>
+
+    <p>
+      <label>Owner full name</label><br>
+      <input type="text" id="ownerName" required>
+    </p>
+
+    <p>
+      <label>Email</label><br>
+      <input type="email" id="email" required>
+    </p>
+
+    <p>
+      <label>Phone number</label><br>
+      <input type="tel" id="phone">
+    </p>
+
+    <p>
+      <label>Street address</label><br>
+      <input type="text" id="street" placeholder="e.g. 123 Main Street" required>
+    </p>
+
+    <p>
+      <label>City</label><br>
+      <input type="text" id="city" value="Vancouver" required>
+    </p>
+
+    <p>
+      <label>Province</label><br>
+      <select id="province">
+        <option value="BC" selected>British Columbia</option>
+        <option value="AB">Alberta</option>
+        <option value="SK">Saskatchewan</option>
+        <option value="MB">Manitoba</option>
+        <option value="ON">Ontario</option>
+        <option value="QC">Quebec</option>
+        <option value="NB">New Brunswick</option>
+        <option value="NS">Nova Scotia</option>
+        <option value="PE">Prince Edward Island</option>
+        <option value="NL">Newfoundland and Labrador</option>
+        <option value="YT">Yukon</option>
+        <option value="NT">Northwest Territories</option>
+        <option value="NU">Nunavut</option>
+      </select>
+    </p>
+
+    <p>
+      <label>Postal code</label><br>
+      <input type="text" id="postal" placeholder="V6B 1A1" maxlength="7" required>
+    </p>
+
+    <p>
+      <label>Password</label><br>
+      <input type="password" id="pass1" required>
+    </p>
+
+    <p>
+      <label>Confirm password</label><br>
+      <input type="password" id="pass2" required>
+    </p>
+
+    <p id="errorMsg"><strong></strong></p>
+
+    <button type="submit">Create business account</button>
+  </form>
+
+  <p>Already registered? <a href="businesslogin.html">Log in</a></p>
+
+  <hr>
+
+  <p><a href="masterlandingpage.html">Back to business page</a></p>
+
+  <hr>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var postalBox = document.getElementById("postal");
+
+    postalBox.oninput = function () {
+      var clean = postalBox.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+
+      if (clean.length > 3) {
+        postalBox.value = clean.slice(0, 3) + " " + clean.slice(3);
+      } else {
+        postalBox.value = clean;
+      }
+    };
+
+    document.getElementById("registerForm").onsubmit = function (e) {
+      e.preventDefault();
+
+      var out = document.getElementById("errorMsg").querySelector("strong");
+      var pass1 = document.getElementById("pass1").value;
+      var pass2 = document.getElementById("pass2").value;
+
+      var postalOk = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z] \d[ABCEGHJ-NPRSTV-Z]\d$/.test(postalBox.value);
+
+      if (!postalOk) {
+        out.textContent = "Please enter a valid postal code, like V6B 1A1.";
+        return;
+      }
+
+      if (pass1 !== pass2) {
+        out.textContent = "Passwords don't match.";
+        return;
+      }
+
+      localStorage.setItem("innovaBizName", document.getElementById("bizName").value);
+      localStorage.setItem("innovaBizEmail", document.getElementById("email").value);
+      localStorage.setItem("innovaBizStreet", document.getElementById("street").value.trim());
+      localStorage.setItem("innovaBizCity", document.getElementById("city").value.trim());
+      localStorage.setItem("innovaBizProvince", document.getElementById("province").value);
+      localStorage.setItem("innovaBizPostal", postalBox.value);
+
+      localStorage.setItem("innovaBizStatus", "pending");
+      window.location.href = "businesspending.html";
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Business login - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Business log in</h2>
+
+  <form id="loginForm">
+    <p>
+      <label>Email</label><br>
+      <input type="email" id="email" required>
+    </p>
+
+    <p>
+      <label>Password</label><br>
+      <input type="password" id="pass" required>
+    </p>
+
+    <p id="errorMsg"><strong></strong></p>
+
+    <button type="submit">Log in</button>
+  </form>
+
+  <p>New here? <a href="businessregister.html">Register your business</a></p>
+
+  <hr>
+
+  <p><a href="masterlandingpage.html">Back to business page</a></p>
+
+  <script>
+    document.getElementById("loginForm").onsubmit = function (e) {
+      e.preventDefault();
+
+      var savedEmail = localStorage.getItem("innovaBizEmail");
+      var typedEmail = document.getElementById("email").value;
+
+      if (savedEmail && savedEmail === typedEmail) {
+        var status = localStorage.getItem("innovaBizStatus");
+
+        if (status === "pending" || status === "rejected") {
+          window.location.href = "businesspending.html";
+        } else if (status === "invoiced") {
+          window.location.href = "businessinvoice.html";
+        } else {
+          window.location.href = "businessdashboard.html";
+        }
+      } else {
+        document.getElementById("errorMsg").textContent = "No business account found with that email.";
+      }
+    };
+  </script>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+</body>
+</html>

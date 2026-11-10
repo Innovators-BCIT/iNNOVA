@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My bookings - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>My bookings</h2>
+
+  <p><strong id="countMsg"></strong></p>
+
+  <div id="list"></div>
+
+  <p id="noAccount" hidden>You need an account to see your bookings. <a href="login_registerpagecustomer.html">Create one</a> or <a href="customerlogin.html">log in</a>.</p>
+
+  <p><a href="landingpagecustomer.html">Book another slot</a></p>
+
+  <hr>
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var email = localStorage.getItem("innovaEmail");
+
+    function esc(t) {
+      return String(t).replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function getBookings() {
+      return JSON.parse(localStorage.getItem("innovaBookings") || "[]");
+    }
+
+    function drawBookings() {
+      if (!email) {
+        document.getElementById("noAccount").hidden = false;
+        return;
+      }
+
+      var all = getBookings();
+      var html = "";
+      var count = 0;
+
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].email !== email) {
+          continue;
+        }
+
+        count++;
+
+        html += '<div class="slot">';
+        html += "<h3>" + esc(all[i].business) + "</h3>";
+        html += "<p>" + esc(all[i].time) + "</p>";
+        html += '<button type="button" onclick="cancelBooking(' + all[i].id + ')">Cancel booking</button>';
+        html += "</div>";
+      }
+
+      if (count === 0) {
+        html = '<p>No bookings yet. <a href="landingpagecustomer.html">Find a slot</a></p>';
+      }
+
+      document.getElementById("list").innerHTML = html;
+      document.getElementById("countMsg").textContent = count + " booking" + (count === 1 ? "" : "s");
+    }
+
+    function cancelBooking(id) {
+      if (!confirm("Cancel this booking?")) {
+        return;
+      }
+
+      var left = [];
+      var all = getBookings();
+
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].id !== id) {
+          left.push(all[i]);
+        }
+      }
+
+      localStorage.setItem("innovaBookings", JSON.stringify(left));
+      drawBookings();
+    }
+
+    drawBookings();
+  </script>
+</body>
+</html>

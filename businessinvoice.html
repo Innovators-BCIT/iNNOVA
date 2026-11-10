@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Your invoice</h2>
+
+  <div class="slot">
+    <h3>iNNOVA annual subscription</h3>
+    <p>Billed to: <strong id="bizName">your business</strong></p>
+    <p>Amount: <strong>$1,800.00 CAD</strong> per year</p>
+    <p>Status: <strong id="payStatus">Unpaid</strong></p>
+    <button type="button" id="payBtn">Pay with PayPal</button>
+  </div>
+
+  <p id="msg"></p>
+
+  <hr>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var status = localStorage.getItem("innovaBizStatus");
+    var savedName = localStorage.getItem("innovaBizName");
+    var payBtn = document.getElementById("payBtn");
+
+    if (savedName) {
+      document.getElementById("bizName").textContent = savedName;
+    }
+
+    if (status === "paid") {
+      document.getElementById("payStatus").textContent = "Paid";
+      payBtn.hidden = true;
+      document.getElementById("msg").innerHTML = '<a href="businessdashboard.html">Go to my dashboard</a>';
+    } else if (status !== "invoiced") {
+      payBtn.disabled = true;
+      document.getElementById("msg").innerHTML = 'No invoice yet. <a href="businesspending.html">Check your application status</a>';
+    }
+
+    payBtn.onclick = function () {
+      payBtn.textContent = "Contacting PayPal...";
+      payBtn.disabled = true;
+
+      setTimeout(function () {
+        localStorage.setItem("innovaBizStatus", "paid");
+        window.location.href = "businessapproved.html";
+      }, 1200);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Customer log in - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Customer log in</h2>
+
+  <div id="slotBox" hidden>
+    <div class="slot">
+      <h3 id="businessName"></h3>
+      <p id="slotTime"></p>
+    </div>
+  </div>
+
+  <form id="loginForm">
+    <p>
+      <label>Email</label><br>
+      <input type="email" id="email" required>
+    </p>
+
+    <p id="errorMsg"><strong></strong></p>
+
+    <button type="submit">Log in</button>
+  </form>
+
+  <p>New here? <a href="login_registerpagecustomer.html" id="registerLink">Create an account</a></p>
+
+  <hr>
+  <p><a href="landingpagecustomer.html">Back to open slots</a></p>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var business = params.get("business");
+    var time = params.get("time");
+
+    if (business && time) {
+      document.getElementById("businessName").textContent = business;
+      document.getElementById("slotTime").textContent = time;
+      document.getElementById("slotBox").hidden = false;
+      document.getElementById("registerLink").href = "login_registerpagecustomer.html?business=" + encodeURIComponent(business) + "&time=" + encodeURIComponent(time);
+    }
+
+    document.getElementById("loginForm").onsubmit = function (e) {
+      e.preventDefault();
+
+      var savedEmail = localStorage.getItem("innovaEmail");
+      var typedEmail = document.getElementById("email").value.trim();
+
+      if (savedEmail && savedEmail.toLowerCase() === typedEmail.toLowerCase()) {
+        if (business && time) {
+          window.location.href = "customerslotsconfirmtation.html?business=" + encodeURIComponent(business) + "&time=" + encodeURIComponent(time);
+        } else {
+          window.location.href = "landingpagecustomer.html";
+        }
+      } else {
+        document.getElementById("errorMsg").querySelector("strong").textContent = "No account found with that email.";
+      }
+    };
+  </script>
+</body>
+</html>

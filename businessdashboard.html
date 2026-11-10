@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2 id="welcome">Welcome</h2>
+
+  <h3>Overview</h3>
+  <table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+      <td>Open slots</td>
+      <td><strong id="openCount">0</strong></td>
+    </tr>
+    <tr>
+      <td>Booked slots</td>
+      <td><strong id="bookedCount">0</strong></td>
+    </tr>
+    <tr>
+      <td>Calendars connected</td>
+      <td><strong id="calCount">0</strong> (<a href="synccalendar.html">manage</a>)</td>
+    </tr>
+  </table>
+
+  <h3>Upcoming bookings</h3>
+  <table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Day and time</th>
+        <th>Customer</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="bookingList"></tbody>
+  </table>
+
+  <h3>Add a slot</h3>
+  <form id="addForm">
+    <p>
+      <label>Day</label><br>
+      <select id="addDay">
+        <option>Mon</option>
+        <option>Tue</option>
+        <option>Wed</option>
+        <option>Thu</option>
+        <option>Fri</option>
+        <option>Sat</option>
+        <option>Sun</option>
+      </select>
+    </p>
+
+    <p>
+      <label>Time</label><br>
+      <input type="text" id="addTime" placeholder="e.g. 2:15 PM" required>
+    </p>
+
+    <button type="submit">Add slot</button>
+  </form>
+
+  <h3>My slots</h3>
+  <p>
+    <label>Show</label><br>
+    <select id="statusFilter">
+      <option value="all">All slots</option>
+      <option value="open">Open only</option>
+      <option value="booked">Booked only</option>
+    </select>
+  </p>
+
+  <table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Day and time</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="slotList"></tbody>
+  </table>
+
+  <hr>
+
+  <p><a href="synccalendar.html">Sync my calendar</a></p>
+  <p><a href="#" id="logOut">Log out</a></p>
+
+  <hr>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var bizName = localStorage.getItem("innovaBizName") || "your business";
+    document.getElementById("welcome").textContent = "Welcome, " + bizName;
+
+    var connected = JSON.parse(localStorage.getItem("innovaConnected") || "[]");
+    document.getElementById("calCount").textContent = connected.length;
+
+    var slots = [
+      { id: 1, day: "Mon", time: "9:00 AM", customer: "Aman S." },
+      { id: 2, day: "Mon", time: "10:30 AM", customer: "" },
+      { id: 3, day: "Tue", time: "12:00 PM", customer: "Priya K." },
+      { id: 4, day: "Tue", time: "3:00 PM", customer: "" },
+      { id: 5, day: "Wed", time: "1:30 PM", customer: "" },
+      { id: 6, day: "Thu", time: "9:00 AM", customer: "Liam T." },
+      { id: 7, day: "Fri", time: "4:30 PM", customer: "" },
+      { id: 8, day: "Sat", time: "11:00 AM", customer: "Chloe W." }
+    ];
+
+    var idCounter = 9;
+
+    function esc(t) {
+      return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function drawDashboard() {
+      var filter = document.getElementById("statusFilter").value;
+      var bookingHtml = "";
+      var slotHtml = "";
+      var open = 0;
+      var booked = 0;
+
+      for (var i = 0; i < slots.length; i++) {
+        var s = slots[i];
+
+        if (s.customer) {
+          booked++;
+          bookingHtml += "<tr>";
+          bookingHtml += "<td>" + esc(s.day) + " " + esc(s.time) + "</td>";
+          bookingHtml += "<td>" + esc(s.customer) + "</td>";
+          bookingHtml += '<td><button type="button" onclick="cancelBooking(' + s.id + ')">Cancel booking</button></td>';
+          bookingHtml += "</tr>";
+        } else {
+          open++;
+        }
+
+        if (filter === "open" && s.customer) { continue; }
+        if (filter === "booked" && !s.customer) { continue; }
+
+        slotHtml += "<tr>";
+        slotHtml += "<td>" + esc(s.day) + " " + esc(s.time) + "</td>";
+
+        if (s.customer) {
+          slotHtml += "<td><strong>Booked</strong></td>";
+          slotHtml += "<td>-</td>";
+        } else {
+          slotHtml += "<td><strong>Open</strong></td>";
+          slotHtml += '<td><button type="button" onclick="removeSlot(' + s.id + ')">Remove</button></td>';
+        }
+
+        slotHtml += "</tr>";
+      }
+
+      if (bookingHtml === "") {
+        bookingHtml = '<tr><td colspan="3">No bookings yet.</td></tr>';
+      }
+
+      if (slotHtml === "") {
+        slotHtml = '<tr><td colspan="3">No slots to show.</td></tr>';
+      }
+
+      document.getElementById("bookingList").innerHTML = bookingHtml;
+      document.getElementById("slotList").innerHTML = slotHtml;
+      document.getElementById("openCount").textContent = open;
+      document.getElementById("bookedCount").textContent = booked;
+    }
+
+    function removeSlot(id) {
+      for (var i = 0; i < slots.length; i++) {
+        if (slots[i].id === id) {
+          slots.splice(i, 1);
+          break;
+        }
+      }
+
+      drawDashboard();
+    }
+
+    function cancelBooking(id) {
+      for (var i = 0; i < slots.length; i++) {
+        if (slots[i].id === id) {
+          slots[i].customer = "";
+          break;
+        }
+      }
+
+      drawDashboard();
+    }
+
+    document.getElementById("addForm").onsubmit = function (e) {
+      e.preventDefault();
+
+      slots.push({
+        id: idCounter,
+        day: document.getElementById("addDay").value,
+        time: document.getElementById("addTime").value,
+        customer: ""
+      });
+
+      idCounter++;
+
+      document.getElementById("addTime").value = "";
+      drawDashboard();
+    };
+
+    document.getElementById("statusFilter").onchange = drawDashboard;
+
+    document.getElementById("logOut").onclick = function () {
+      localStorage.removeItem("innovaBizName");
+      localStorage.removeItem("innovaBizEmail");
+      window.location.href = "businesslogin.html";
+      return false;
+    };
+
+    drawDashboard();
+  </script>
+</body>
+</html>

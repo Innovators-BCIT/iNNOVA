@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>You're approved - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>You're approved!</h2>
+
+  <p>Welcome, <strong id="bizName">your business</strong>.</p>
+  <p>We've reviewed your details and your business is now onboarded on iNNOVA.</p>
+
+  <div class="slot">
+    <h3>Next step</h3>
+    <p>Sync your calendar so customers can only book times you're free.</p>
+    <a href="synccalendar.html">Sync my calendar</a>
+  </div>
+
+  <hr>
+
+  <script>
+    var bizName = localStorage.getItem("innovaBizName");
+
+    if (bizName) {
+      document.getElementById("bizName").textContent = bizName;
+    }
+  </script>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create account - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <h2>Create your account</h2>
+
+  <div id="slotBox" hidden>
+    <div class="slot">
+      <h3 id="businessName"></h3>
+      <p id="slotTime"></p>
+    </div>
+  </div>
+
+  <form id="registerForm">
+    <p>
+      <label>Full name</label><br>
+      <input type="text" id="fullName" required>
+    </p>
+
+    <p>
+      <label>Email</label><br>
+      <input type="email" id="email" required>
+    </p>
+
+    <p>
+      <label>Phone number</label><br>
+      <input type="tel" id="phone">
+    </p>
+
+    <p>
+      <label>Password</label><br>
+      <input type="password" id="pass1" required>
+    </p>
+
+    <p>
+      <label>Confirm password</label><br>
+      <input type="password" id="pass2" required>
+    </p>
+
+    <p id="errorMsg" style="color: red;"></p>
+
+    <button type="submit">Create account</button>
+  </form>
+
+  <p>Already have an account? <a href="customerlogin.html" id="loginLink">Log in</a></p>
+
+  <hr>
+
+  <p><a href="landingpagecustomer.html">Back to open slots</a></p>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var business = params.get("business");
+    var time = params.get("time");
+
+    if (business && time) {
+      document.getElementById("businessName").textContent = business;
+      document.getElementById("slotTime").textContent = time;
+      document.getElementById("slotBox").hidden = false;
+
+      document.getElementById("loginLink").href = "customerlogin.html?business=" + encodeURIComponent(business) + "&time=" + encodeURIComponent(time);
+    }
+
+    document.getElementById("registerForm").onsubmit = function (e) {
+      e.preventDefault();
+
+      var pass1 = document.getElementById("pass1").value;
+      var pass2 = document.getElementById("pass2").value;
+
+      if (pass1 !== pass2) {
+        document.getElementById("errorMsg").textContent = "Passwords don't match.";
+        return;
+      }
+
+      localStorage.setItem("innovaName", document.getElementById("fullName").value);
+      localStorage.setItem("innovaEmail", document.getElementById("email").value);
+
+      if (business && time) {
+        window.location.href = "customerslotsconfirmtation.html?business=" + encodeURIComponent(business) + "&time=" + encodeURIComponent(time);
+      } else {
+        window.location.href = "landingpagecustomer.html";
+      }
+    };
+  </script>
+</body>
+</html>

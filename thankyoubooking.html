@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Thank you - iNNOVA</title>
+</head>
+<body>
+
+  <h1>iNNOVA</h1>
+  <h2>Thank you, <span id="customerName">friend</span>!</h2>
+  <p>Your slot is booked.</p>
+
+  <div class="slot">
+    <h3 id="businessName">Your booking</h3>
+    <p id="slotTime"></p>
+  </div>
+
+  <p><a href="landingpagecustomer.html">Book another slot</a></p>
+  <p><a href="mybookings.html">View my bookings</a></p>
+  <hr>
+
+  <p><a href="masterlandingpage.html">Back to home</a></p>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var business = params.get("business");
+    var time = params.get("time");
+    var name = localStorage.getItem("innovaName");
+
+    if (name) {
+      document.getElementById("customerName").textContent = name;
+    }
+
+    if (business && time) {
+      document.getElementById("businessName").textContent = business;
+      document.getElementById("slotTime").textContent = time;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>iNNOVA</title>
+
+  <style>
+    body {
+      max-width: 1000px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .filters p {
+      flex: 1;
+      min-width: 180px;
+      margin: 0 0 15px 0;
+    }
+
+    select {
+      font-family: 'ADLaM Display', sans-serif;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid #333;
+      border-radius: 6px;
+    }
+
+    #slotList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    #slotList .slot {
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #slotList .slot a {
+      margin-top: auto;
+      color: inherit;
+    }
+
+    #slotList .slot:hover {
+      background-color: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+  <p>Pick a time that works for you.</p>
+
+  <h2>Open slots</h2>
+
+  <div class="filters">
+    <p>
+      <label>Search</label><br>
+      <input type="text" id="searchBox" placeholder="Try barber, dentist, yoga, V5H...">
+    </p>
+
+    <p>
+      <label>Business</label><br>
+      <select id="bizFilter"></select>
+    </p>
+
+    <p>
+      <label>Day</label><br>
+      <select id="dayFilter">
+        <option value="all">Any day</option>
+        <option>Mon</option>
+        <option>Tue</option>
+        <option>Wed</option>
+        <option>Thu</option>
+        <option>Fri</option>
+        <option>Sat</option>
+      </select>
+    </p>
+  </div>
+
+  <p><strong id="countMsg"></strong></p>
+
+  <div id="slotList"></div>
+
+  <hr>
+
+  <p><a href="masterlandingpage.html">Back to home</a></p>
+
+  <hr>
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var businesses = [
+      {
+        name: "Josephine Wellness", type: "Wellness", area: "Kitsilano", length: 45,
+        address: "2150 West 4th Avenue", city: "Vancouver", postal: "V6K 1N8",
+        starts: ["9:00am", "10:00am", "11:00am", "1:00pm", "2:00pm", "3:30pm"]
+      },
+      {
+        name: "Babros Barbershop", type: "Barbershop", area: "Commercial Drive", length: 30,
+        address: "1420 Commercial Drive", city: "Vancouver", postal: "V5L 3X9",
+        starts: ["9:30am", "10:30am", "11:30am", "1:30pm", "3:00pm", "4:30pm"]
+      },
+      {
+        name: "Northshore Dentistry", type: "Dentist", area: "North Vancouver", length: 90,
+        address: "1450 Marine Drive", city: "North Vancouver", postal: "V7P 1T1",
+        starts: ["8:00am", "9:45am", "11:30am", "1:00pm", "2:45pm", "4:30pm"]
+      },
+      {
+        name: "Cedar and Pine Personal Trainers", type: "Fitness", area: "Mount Pleasant", length: 75,
+        address: "355 East Broadway", city: "Vancouver", postal: "V5T 1W5",
+        starts: ["7:00am", "8:30am", "10:00am", "3:45pm", "5:15pm", "6:45pm"]
+      },
+      {
+        name: "Gastown Hair Studio", type: "Hair salon", area: "Gastown", length: 90,
+        address: "320 Water Street", city: "Vancouver", postal: "V6B 1B6",
+        starts: ["9:00am", "10:45am", "12:30pm", "2:15pm", "4:00pm", "5:45pm"]
+      },
+      {
+        name: "Yaletown Physio", type: "Physiotherapy", area: "Yaletown", length: 45,
+        address: "1180 Hamilton Street", city: "Vancouver", postal: "V6B 2S8",
+        starts: ["8:00am", "9:00am", "10:00am", "1:00pm", "2:00pm", "3:00pm"]
+      },
+      {
+        name: "Granville Nail Bar", type: "Nails", area: "Granville Street", length: 60,
+        address: "1055 Granville Street", city: "Vancouver", postal: "V6Z 1L4",
+        starts: ["10:00am", "11:15am", "12:30pm", "2:00pm", "3:15pm", "4:30pm"]
+      },
+      {
+        name: "Richmond Family Clinic", type: "Clinic", area: "Richmond", length: 20,
+        address: "8120 No. 3 Road", city: "Richmond", postal: "V6Y 2B5",
+        starts: ["9:00am", "9:30am", "10:00am", "1:00pm", "1:30pm", "2:00pm"]
+      },
+      {
+        name: "Burnaby Yoga House", type: "Yoga studio", area: "Burnaby", length: 60,
+        address: "4720 Kingsway", city: "Burnaby", postal: "V5H 4N2",
+        starts: ["6:30am", "8:00am", "12:00pm", "5:30pm", "6:45pm", "8:00pm"]
+      },
+      {
+        name: "Surrey Auto Detail", type: "Auto detailing", area: "Surrey", length: 120,
+        address: "13450 King George Boulevard", city: "Surrey", postal: "V3T 2T8",
+        starts: ["8:00am", "10:30am", "1:00pm", "3:30pm", "8:30am", "11:00am"]
+      },
+      {
+        name: "Main Street Massage", type: "Massage", area: "Main Street", length: 60,
+        address: "3350 Main Street", city: "Vancouver", postal: "V5V 3M7",
+        starts: ["10:00am", "11:30am", "1:00pm", "2:30pm", "4:00pm", "5:30pm"]
+      },
+      {
+        name: "Lonsdale Eye Care", type: "Optometrist", area: "North Vancouver", length: 30,
+        address: "1520 Lonsdale Avenue", city: "North Vancouver", postal: "V7M 2J1",
+        starts: ["9:00am", "9:45am", "10:30am", "1:00pm", "1:45pm", "2:30pm"]
+      }
+    ];
+
+    var days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    function toMinutes(text) {
+      var parts = text.replace("am", "").replace("pm", "").split(":");
+      var hours = parseInt(parts[0]);
+      var mins = parseInt(parts[1]);
+
+      if (text.indexOf("pm") !== -1 && hours !== 12) {
+        hours += 12;
+      }
+
+      if (text.indexOf("am") !== -1 && hours === 12) {
+        hours = 0;
+      }
+
+      return hours * 60 + mins;
+    }
+
+    function toText(total) {
+      var hours = Math.floor(total / 60);
+      var mins = total % 60;
+      var ending = hours >= 12 ? "pm" : "am";
+
+      hours = hours % 12;
+
+      if (hours === 0) {
+        hours = 12;
+      }
+
+      if (mins < 10) {
+        mins = "0" + mins;
+      }
+
+      return hours + ":" + mins + ending;
+    }
+
+    var slots = [];
+
+    for (var b = 0; b < businesses.length; b++) {
+      var biz = businesses[b];
+
+      for (var j = 0; j < biz.starts.length; j++) {
+        var start = toMinutes(biz.starts[j]);
+
+        slots.push({
+          business: biz.name,
+          type: biz.type,
+          area: biz.area,
+          address: biz.address,
+          city: biz.city,
+          postal: biz.postal,
+          day: days[(b + j) % 6],
+          time: biz.starts[j] + " - " + toText(start + biz.length)
+        });
+      }
+    }
+
+    var bizFilter = document.getElementById("bizFilter");
+    bizFilter.innerHTML = '<option value="all">All businesses</option>';
+
+    for (var i = 0; i < businesses.length; i++) {
+      bizFilter.innerHTML += '<option value="' + businesses[i].name + '">' + businesses[i].name + "</option>";
+    }
+
+    function drawSlots() {
+      var search = document.getElementById("searchBox").value.toLowerCase();
+      var bizChoice = bizFilter.value;
+      var dayChoice = document.getElementById("dayFilter").value;
+      var html = "";
+      var shown = 0;
+
+      for (var i = 0; i < slots.length; i++) {
+        var s = slots[i];
+
+        if (bizChoice !== "all" && s.business !== bizChoice) {
+          continue;
+        }
+
+        if (dayChoice !== "all" && s.day !== dayChoice) {
+          continue;
+        }
+
+        var searchText = s.business + " " + s.type + " " + s.area + " " + s.address + " " + s.city + " " + s.postal;
+
+        if (search && searchText.toLowerCase().indexOf(search) === -1) {
+          continue;
+        }
+
+        shown++;
+
+        var link = "customerslotsconfirmtation.html?business=" + encodeURIComponent(s.business) + "&time=" + encodeURIComponent(s.day + ", " + s.time);
+
+        html += '<div class="slot">';
+        html += "<h3>" + s.business + "</h3>";
+        html += "<p>" + s.type + " - " + s.area + "</p>";
+        html += "<p>" + s.address + "<br>" + s.city + " " + s.postal + "</p>";
+        html += "<p>" + s.day + ", " + s.time + "</p>";
+        html += '<a href="' + link + '">Select</a>';
+        html += "</div>";
+      }
+
+      if (shown === 0) {
+        html = "<p>No slots match that.</p>";
+      }
+
+      document.getElementById("slotList").innerHTML = html;
+      document.getElementById("countMsg").textContent = shown + " slots";
+    }
+
+    document.getElementById("searchBox").oninput = drawSlots;
+    bizFilter.onchange = drawSlots;
+    document.getElementById("dayFilter").onchange = drawSlots;
+
+    drawSlots();
+  </script>
+</body>
+</html>

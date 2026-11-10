@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact us - iNNOVA</title>
+</head>
+<body>
+  <h1>iNNOVA</h1>
+
+
+  <hr>
+
+  <h2>Contact us</h2>
+  <p>Questions? We would love to hear from you!</p>
+
+  <div class="slot">
+    <h3>Email</h3>
+    <p>iNNOVAschedules.com</p>
+    <h3>Phone</h3>
+    <p>604-529-8430</p>
+    <h3>Location</h3>
+    <p>Vancouver, BC, Canada</p>
+  </div>
+
+  <h3>Send us a message</h3>
+  <p id="msg"><strong></strong></p>
+
+  <form id="form">
+    <p>
+      <label for="name">Your name</label><br>
+      <input id="name" type="text">
+    </p>
+
+    <p>
+      <label for="email">Your email</label><br>
+      <input id="email" type="email">
+    </p>
+
+    <p>
+      <label for="message">Message</label><br>
+      <textarea id="message" rows="5" style="width:100%;box-sizing:border-box"></textarea>
+    </p>
+
+    <button type="submit">Send message</button>
+  </form>
+
+  <hr>
+
+  <footer>
+    <p><strong>iNNOVA</strong> - Every slot, filled.</p>
+    <p>
+      <a href="masterlandingpage.html">Home</a> |
+      <a href="aboutus.html">About us</a> |
+      <a href="contactus.html">Contact us</a>
+    </p>
+    <p><small>Vancouver, BC, Canada<br>&copy; 2026 The Innovators. All rights reserved.</small></p>
+  </footer>
+
+  <script>
+    var out = document.getElementById("msg").querySelector("strong");
+
+    document.getElementById("form").onsubmit = function (e) {
+      e.preventDefault();
+
+      var name = document.getElementById("name").value.trim();
+      var email = document.getElementById("email").value.trim();
+      var message = document.getElementById("message").value.trim();
+
+      if (name.length < 2) { out.textContent = "Please enter your name."; return; }
+      if (email.indexOf("@") < 1 || email.indexOf(".") < 0) { out.textContent = "Please enter a valid email."; return; }
+      if (message.length < 10) { out.textContent = "Please write a longer message."; return; }
+
+      out.textContent = "Thanks " + name + ", your message was sent.";
+      document.getElementById("form").reset();
+    };
+  </script>
+</body>
+</html>
